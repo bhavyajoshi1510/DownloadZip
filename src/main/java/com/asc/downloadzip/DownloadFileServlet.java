@@ -8,11 +8,18 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-@WebServlet(name = "DownloadFileServlet", value = "/DownloadFileServlet")
+@WebServlet(name = "DownloadFileServlet", value = "/DownloadFile")
 public class DownloadFileServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // reads input file from an absolute path
+
+        String[] listOfId = request.getParameter("Id").split(",");
+        System.out.print(listOfId);
+
+        //call function of get url of the files from SF
+
+
         String filePath = "C:\\JsonResponse\\FileUploadLogs\\2021_08_16_10_38_05_sample12.pdf_upload.txt";
         File downloadFile = new File(filePath);
         FileInputStream inStream = new FileInputStream(downloadFile);

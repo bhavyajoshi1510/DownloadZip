@@ -11,7 +11,7 @@
 
     <servlet-mapping>
         <servlet-name>DownloadFileServlet</servlet-name>
-        <url-pattern>/DownloadFileServlet</url-pattern>
+        <url-pattern>/DownloadFile</url-pattern>
     </servlet-mapping>
 
 </web-app>
