@@ -3,6 +3,9 @@ package com.asc.downloadzip;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -26,6 +29,8 @@ import org.json.JSONObject;
 
 
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class CreateZip {
 
@@ -39,8 +44,12 @@ public class CreateZip {
     public String[] urlAndToken = new String[2];
     public String logFileName,zipFilePath,DirName;
 
-    public String getZipFilePath(String[] ids) {
-        DirName = String.valueOf(LocalDateTime.now());
+    public String getZipFilePath(String[] ids) throws IOException {
+        DirName = String.valueOf(LocalDateTime.now()).replace(":","-");
+        Path path = Paths.get("C:\\DownloadZip\\"+DirName);
+        Files.createDirectories(path);
+        zipFilePath ="C:\\DownloadZip\\"+DirName;
+
         for (String id: ids) {
             logFileName = id+"_log";
             CloseableHttpClient client = HttpClients.createDefault();
@@ -55,18 +64,18 @@ public class CreateZip {
                 int BodyLength = (int) object.get("BodyLength");
 
                 HttpGet getBody = new HttpGet(urlAndToken[0]+"/services/data/v53.0/sobjects/Attachment/"+id+"/Body");
-                get.setHeader("Authorization", "Bearer "+urlAndToken[1]);
-                //get.setHeader("Authorization", "OAuth "+urlAndToken[1]);
-                //get.setHeader("content-type","");
+                getBody.setHeader("Authorization", "Bearer "+urlAndToken[1]);
                 HttpResponse queryResponse1 = client.execute(getBody);
 
                 writeLogs("Response code from GET request is ---> "+ queryResponse1.getStatusLine().getStatusCode(),logFileName);
-                HttpURLConnection connection = (HttpURLConnection) new URL(urlAndToken[0]+"/services/data/v53.0/sobjects/Attachment/"+id+"/Body").openConnection();
+                File file = new File(zipFilePath+"\\"+fileName);
 
-                StringBuilder stringBuilder = new StringBuilder();
+
+                copyInputStreamToFile(queryResponse1.getEntity().getContent(),file,BodyLength);
+               /* StringBuilder stringBuilder = new StringBuilder();
                 BufferedReader bufferedReader = null;
                 try {
-                    InputStream inputStream = connection.getInputStream();
+                    InputStream inputStream = queryResponse1.getEntity().getContent();
                     if (inputStream != null) {
                         bufferedReader = new BufferedReader(new InputStreamReader(
                                 inputStream));
@@ -84,16 +93,58 @@ public class CreateZip {
                 String body = stringBuilder.toString();
 
                 byte[] bytes = body.getBytes();
-                FileOutputStream fos = new FileOutputStream("C:\\DownloadZip\\"+DirName+"\\"+fileName);
+                FileOutputStream fos = new FileOutputStream(zipFilePath+"\\"+fileName);
                 fos.write(bytes);
-                fos.close();
+                fos.close();*/
 
             }
             catch(Exception e){
                 writeLogs("inside catch block of getRootFolderID Method-->"+e,logFileName);
             }
         }
-        return zipFilePath;
+
+        return zipFiles(zipFilePath);
+    }
+
+    private  String zipFiles(String zipFilePath) {
+        try {
+            FileOutputStream fos = new FileOutputStream(zipFilePath+"\\Attachments.zip");
+            ZipOutputStream zos = new ZipOutputStream(fos);
+            File[] files = new File(zipFilePath).listFiles();
+            String[] filePaths = new String[files.length];
+            for (int i = 0; i < files.length; i++) {
+                filePaths[i] = files[i].getAbsolutePath();
+            }
+
+            for (String aFile : filePaths) {
+                zos.putNextEntry(new ZipEntry(new File(aFile).getName()));
+
+                byte[] bytes = Files.readAllBytes(Paths.get(aFile));
+                zos.write(bytes, 0, bytes.length);
+                zos.closeEntry();
+            }
+
+            zos.close();
+
+        } catch (FileNotFoundException ex) {
+            System.err.println("A file does not exist: " + ex);
+        } catch (IOException ex) {
+            System.err.println("I/O error: " + ex);
+        }
+        return zipFilePath+"\\Attachments.zip";
+    }
+
+    private static void copyInputStreamToFile(InputStream inputStream, File file, int BufferSize)
+            throws IOException {
+
+        // append = false
+        try (FileOutputStream outputStream = new FileOutputStream(file, false)) {
+            int read;
+            byte[] bytes = new byte[BufferSize];
+            while ((read = inputStream.read(bytes)) != -1) {
+                outputStream.write(bytes, 0, read);
+            }
+        }
     }
 
     public String[] getAccessToken (CloseableHttpClient client) throws IOException {

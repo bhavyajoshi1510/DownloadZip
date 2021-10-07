@@ -36,6 +36,8 @@ public class DownloadFileServlet extends HttpServlet {
         }
         System.out.println("MIME type: " + mimeType);
 
+        long fileLength = downloadFile.length();
+
         // modifies response
         response.setContentType(mimeType);
         response.setContentLength((int) downloadFile.length());
@@ -48,7 +50,7 @@ public class DownloadFileServlet extends HttpServlet {
         // obtains response's output stream
         OutputStream outStream = response.getOutputStream();
 
-        byte[] buffer = new byte[4096];
+        byte[] buffer = new byte[(int) fileLength];
         int bytesRead = -1;
 
         while ((bytesRead = inStream.read(buffer)) != -1) {
