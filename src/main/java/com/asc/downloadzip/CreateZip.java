@@ -1,30 +1,20 @@
 package com.asc.downloadzip;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 
@@ -72,31 +62,6 @@ public class CreateZip {
 
 
                 copyInputStreamToFile(queryResponse1.getEntity().getContent(),file,BodyLength);
-               /* StringBuilder stringBuilder = new StringBuilder();
-                BufferedReader bufferedReader = null;
-                try {
-                    InputStream inputStream = queryResponse1.getEntity().getContent();
-                    if (inputStream != null) {
-                        bufferedReader = new BufferedReader(new InputStreamReader(
-                                inputStream));
-                        char[] charBuffer = new char[BodyLength];
-                        int bytesRead = -1;
-                        while ((bytesRead = bufferedReader.read(charBuffer)) > 0) {
-                            stringBuilder.append(charBuffer, 0, bytesRead);
-                        }
-                    } else {
-                        stringBuilder.append("");
-                    }
-                } catch (IOException ex) {
-                    throw ex;
-                }
-                String body = stringBuilder.toString();
-
-                byte[] bytes = body.getBytes();
-                FileOutputStream fos = new FileOutputStream(zipFilePath+"\\"+fileName);
-                fos.write(bytes);
-                fos.close();*/
-
             }
             catch(Exception e){
                 writeLogs("inside catch block of getRootFolderID Method-->"+e,logFileName);

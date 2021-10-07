@@ -15,7 +15,6 @@ public class DownloadFileServlet extends HttpServlet {
         // reads input file from an absolute path
 
         String[] listOfId = request.getParameter("Id").split(",");
-        System.out.print(listOfId);
 
         //call function of get url of the files from SF
 
@@ -51,7 +50,7 @@ public class DownloadFileServlet extends HttpServlet {
         OutputStream outStream = response.getOutputStream();
 
         byte[] buffer = new byte[(int) fileLength];
-        int bytesRead = -1;
+        int bytesRead; // = -1;
 
         while ((bytesRead = inStream.read(buffer)) != -1) {
             outStream.write(buffer, 0, bytesRead);
@@ -62,8 +61,8 @@ public class DownloadFileServlet extends HttpServlet {
 
     }
 
-    @Override
+   /* @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-    }
+    }*/
 }
