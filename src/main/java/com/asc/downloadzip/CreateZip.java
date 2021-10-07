@@ -148,4 +148,27 @@ public class CreateZip {
             writeLogs("inside catch block of writeLogs Method-->"+e,logFileName);
         }
     }
+
+    public static void deleteFile(File file){
+        file.delete();
+    }
+
+    public static void deleteDirectoryLegacyIO(File file) {
+
+        File[] list = file.listFiles();
+        if (list != null) {
+            for (File temp : list) {
+                //recursive delete
+                System.out.println("Visit " + temp);
+                deleteDirectoryLegacyIO(temp);
+            }
+        }
+
+        if (file.delete()) {
+            System.out.printf("Delete : %s%n", file);
+        } else {
+            System.err.printf("Unable to delete file or directory : %s%n", file);
+        }
+
+    }
 }

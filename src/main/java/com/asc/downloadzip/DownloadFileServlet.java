@@ -1,5 +1,8 @@
 package com.asc.downloadzip;
 
+
+import org.apache.commons.io.FileUtils;
+
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
@@ -12,57 +15,35 @@ import java.io.OutputStream;
 public class DownloadFileServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // reads input file from an absolute path
 
         String[] listOfId = request.getParameter("Id").split(",");
 
-        //call function of get url of the files from SF
-
         String filePath = new CreateZip().getZipFilePath(listOfId);
 
-        /*String filePath = "C:\\JsonResponse\\FileUploadLogs\\2021_08_16_10_38_05_sample12.pdf_upload.txt";*/
         File downloadFile = new File(filePath);
         FileInputStream inStream = new FileInputStream(downloadFile);
-
-        // obtains ServletContext
         ServletContext context = getServletContext();
-
-        // gets MIME type of the file
         String mimeType = context.getMimeType(filePath);
         if (mimeType == null) {
-            // set to binary type if MIME mapping not found
             mimeType = "application/octet-stream";
         }
-        System.out.println("MIME type: " + mimeType);
-
         long fileLength = downloadFile.length();
-
-        // modifies response
         response.setContentType(mimeType);
         response.setContentLength((int) downloadFile.length());
-
-        // forces download
         String headerKey = "Content-Disposition";
         String headerValue = String.format("attachment; filename=\"%s\"", downloadFile.getName());
         response.setHeader(headerKey, headerValue);
 
-        // obtains response's output stream
         OutputStream outStream = response.getOutputStream();
-
         byte[] buffer = new byte[(int) fileLength];
-        int bytesRead; // = -1;
+        int bytesRead;
 
         while ((bytesRead = inStream.read(buffer)) != -1) {
             outStream.write(buffer, 0, bytesRead);
         }
-
         inStream.close();
         outStream.close();
-
+        FileUtils.deleteDirectory(new File(filePath.split( downloadFile.getName())[0]));
     }
 
-   /* @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-    }*/
 }
