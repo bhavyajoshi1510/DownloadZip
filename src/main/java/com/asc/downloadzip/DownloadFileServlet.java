@@ -19,8 +19,9 @@ public class DownloadFileServlet extends HttpServlet {
 
         //call function of get url of the files from SF
 
+        String filePath = new CreateZip().getZipFilePath(listOfId);
 
-        String filePath = "C:\\JsonResponse\\FileUploadLogs\\2021_08_16_10_38_05_sample12.pdf_upload.txt";
+        /*String filePath = "C:\\JsonResponse\\FileUploadLogs\\2021_08_16_10_38_05_sample12.pdf_upload.txt";*/
         File downloadFile = new File(filePath);
         FileInputStream inStream = new FileInputStream(downloadFile);
 
