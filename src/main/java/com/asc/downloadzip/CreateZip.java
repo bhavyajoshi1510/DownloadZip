@@ -70,7 +70,6 @@ public class CreateZip {
                 writeLogs("inside catch block of getRootFolderID Method-->"+e,logFileName);
             }
         }
-
         return zipFiles(zipFilePath,zipFileName);
     }
 
