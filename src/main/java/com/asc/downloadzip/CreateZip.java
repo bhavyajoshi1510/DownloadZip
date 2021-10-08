@@ -39,9 +39,9 @@ public class CreateZip {
         Path path = Paths.get("C:\\DownloadZip\\"+DirName);
         Files.createDirectories(path);
         zipFilePath ="C:\\DownloadZip\\"+DirName+"\\";
-
+        logFileName = zipFileName+"_log";
         for (String id: ids) {
-            logFileName = id+"_log";
+
             CloseableHttpClient client = HttpClients.createDefault();
             try {
                 urlAndToken = getAccessToken(client);
