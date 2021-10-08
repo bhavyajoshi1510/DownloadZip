@@ -55,7 +55,7 @@ public class CreateZip {
 
                 writeLogs("File Name is -------> "+ fileName,logFileName);
                 writeLogs("Length of the file original ---> "+ object.get("BodyLength").toString(),logFileName);
-                writeLogs("Length of the file original ---> "+ BodyLength,logFileName);
+                writeLogs("Length of the file Int ---> "+ BodyLength,logFileName);
 
                 HttpGet getBody = new HttpGet(urlAndToken[0]+"/services/data/v53.0/sobjects/Attachment/"+id+"/Body");
                 getBody.setHeader("Authorization", "Bearer "+urlAndToken[1]);
