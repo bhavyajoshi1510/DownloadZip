@@ -16,9 +16,10 @@ public class DownloadFileServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+        String zipFileName = request.getParameter("fileName");
         String[] listOfId = request.getParameter("Id").split(",");
 
-        String filePath = new CreateZip().getZipFilePath(listOfId);
+        String filePath = new CreateZip().getZipFilePath(listOfId,zipFileName);
 
         File downloadFile = new File(filePath);
         FileInputStream inStream = new FileInputStream(downloadFile);

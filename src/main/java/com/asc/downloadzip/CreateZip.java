@@ -34,11 +34,11 @@ public class CreateZip {
     public String[] urlAndToken = new String[2];
     public String logFileName,zipFilePath,DirName;
 
-    public String getZipFilePath(String[] ids) throws IOException {
+    public String getZipFilePath(String[] ids, String zipFileName) throws IOException {
         DirName = String.valueOf(LocalDateTime.now()).replace(":","-");
         Path path = Paths.get("C:\\DownloadZip\\"+DirName);
         Files.createDirectories(path);
-        zipFilePath ="C:\\DownloadZip\\"+DirName;
+        zipFilePath ="C:\\DownloadZip\\"+DirName+"\\";
 
         for (String id: ids) {
             logFileName = id+"_log";
@@ -62,7 +62,7 @@ public class CreateZip {
                 HttpResponse queryResponse1 = client.execute(getBody);
 
                 writeLogs("Response code from GET request is ---> "+ queryResponse1.getStatusLine().getStatusCode(),logFileName);
-                File file = new File(zipFilePath+"\\"+fileName);
+                File file = new File(zipFilePath+fileName);
 
                 copyInputStreamToFile(queryResponse1.getEntity().getContent(),file,BodyLength);
             }
@@ -71,10 +71,10 @@ public class CreateZip {
             }
         }
 
-        return zipFiles(zipFilePath);
+        return zipFiles(zipFilePath,zipFileName);
     }
 
-    private  String zipFiles(String zipFilePath) {
+    private  String zipFiles(String zipFilePath,String zipFileName) {
         try {
             File[] files = new File(zipFilePath).listFiles();
             String[] filePaths = new String[files.length];
@@ -82,7 +82,7 @@ public class CreateZip {
                 filePaths[i] = files[i].getAbsolutePath();
             }
 
-            FileOutputStream fos = new FileOutputStream(zipFilePath+"\\Attachments.zip");
+            FileOutputStream fos = new FileOutputStream(zipFilePath+zipFileName+".zip");
             ZipOutputStream zos = new ZipOutputStream(fos);
 
             for (String aFile : filePaths) {
@@ -99,7 +99,7 @@ public class CreateZip {
         } catch (IOException ex) {
             System.err.println("I/O error: " + ex);
         }
-        return zipFilePath+"\\Attachments.zip";
+        return zipFilePath+zipFileName+".zip";
     }
 
     private static void copyInputStreamToFile(InputStream inputStream, File file, int BufferSize) throws IOException {
