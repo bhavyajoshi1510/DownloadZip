@@ -53,13 +53,16 @@ public class CreateZip {
                 String fileName = object.get("Name").toString();
                 int BodyLength = (int) object.get("BodyLength");
 
+                writeLogs("File Name is -------> "+ fileName,logFileName);
+                writeLogs("Length of the file original ---> "+ object.get("BodyLength").toString(),logFileName);
+                writeLogs("Length of the file original ---> "+ BodyLength,logFileName);
+
                 HttpGet getBody = new HttpGet(urlAndToken[0]+"/services/data/v53.0/sobjects/Attachment/"+id+"/Body");
                 getBody.setHeader("Authorization", "Bearer "+urlAndToken[1]);
                 HttpResponse queryResponse1 = client.execute(getBody);
 
                 writeLogs("Response code from GET request is ---> "+ queryResponse1.getStatusLine().getStatusCode(),logFileName);
                 File file = new File(zipFilePath+"\\"+fileName);
-
 
                 copyInputStreamToFile(queryResponse1.getEntity().getContent(),file,BodyLength);
             }
@@ -73,13 +76,14 @@ public class CreateZip {
 
     private  String zipFiles(String zipFilePath) {
         try {
-            FileOutputStream fos = new FileOutputStream(zipFilePath+"\\Attachments.zip");
-            ZipOutputStream zos = new ZipOutputStream(fos);
             File[] files = new File(zipFilePath).listFiles();
             String[] filePaths = new String[files.length];
             for (int i = 0; i < files.length; i++) {
                 filePaths[i] = files[i].getAbsolutePath();
             }
+
+            FileOutputStream fos = new FileOutputStream(zipFilePath+"\\Attachments.zip");
+            ZipOutputStream zos = new ZipOutputStream(fos);
 
             for (String aFile : filePaths) {
                 zos.putNextEntry(new ZipEntry(new File(aFile).getName()));
@@ -88,7 +92,6 @@ public class CreateZip {
                 zos.write(bytes, 0, bytes.length);
                 zos.closeEntry();
             }
-
             zos.close();
 
         } catch (FileNotFoundException ex) {
@@ -99,10 +102,7 @@ public class CreateZip {
         return zipFilePath+"\\Attachments.zip";
     }
 
-    private static void copyInputStreamToFile(InputStream inputStream, File file, int BufferSize)
-            throws IOException {
-
-        // append = false
+    private static void copyInputStreamToFile(InputStream inputStream, File file, int BufferSize) throws IOException {
         try (FileOutputStream outputStream = new FileOutputStream(file, false)) {
             int read;
             byte[] bytes = new byte[BufferSize];
@@ -147,28 +147,5 @@ public class CreateZip {
         } catch (IOException e) {
             writeLogs("inside catch block of writeLogs Method-->"+e,logFileName);
         }
-    }
-
-    public static void deleteFile(File file){
-        file.delete();
-    }
-
-    public static void deleteDirectoryLegacyIO(File file) {
-
-        File[] list = file.listFiles();
-        if (list != null) {
-            for (File temp : list) {
-                //recursive delete
-                System.out.println("Visit " + temp);
-                deleteDirectoryLegacyIO(temp);
-            }
-        }
-
-        if (file.delete()) {
-            System.out.printf("Delete : %s%n", file);
-        } else {
-            System.err.printf("Unable to delete file or directory : %s%n", file);
-        }
-
     }
 }
