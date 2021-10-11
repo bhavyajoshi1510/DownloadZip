@@ -16,28 +16,25 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
-
-
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class CreateZip {
-
- /*     //Sandbox credentials
+      //Sandbox credentials
   protected static final String consumerKey = "3MVG9M6Iz6p_Vt2xTZYciaJsvx2C0hV6f3u3y6UB.fNzEVy.sc2ZDMj12b7wihlmHAtmVv7a7naMWo1cjqTy5";
   protected static final String consumerSecret = "F1869E3FA25ED1D3B3C8A0666DA0EAA7A525CDC27D549205F971A8971AA15F97";
   protected static final String username = "bakul@aspiresoftwareconsultancy.com1.loanfigure";
   protected static final String password = "yaya10Febyaya";
-  protected static final String loginHost = "https://test.salesforce.com";*/
+  protected static final String loginHost = "https://test.salesforce.com";
 
-    //Production credentials
+    /*//Production credentials
 
     protected static final String username="bakul@aspiresoftwareconsultancy.com1";
     protected static final String password="xyz20febzyx";
     protected static final String consumerKey ="3MVG9sG9Z3Q1Rlbfx4FPNiE8CTkriBrbnqoxyHL1UspMzWdThbpRgWYyWwFtjK0tAcHdUBp1O2XO2zsG.xTVm";
     protected static final String consumerSecret ="7680ECE9BA31DFA78A7080B26EBAB5AF20D323315680758538DA56D4B0807418";
-    protected static final String loginHost="https://login.salesforce.com";
+    protected static final String loginHost="https://login.salesforce.com";*/
 
     public String[] urlAndToken = new String[2];
     public String logFileName,zipFilePath,DirName;
@@ -56,7 +53,7 @@ public class CreateZip {
                 HttpGet get = new HttpGet(urlAndToken[0]+"/services/data/v53.0/sobjects/Attachment/"+id);
                 get.setHeader("Authorization", "OAuth " + urlAndToken[1]);
                 HttpResponse queryResponse = client.execute(get);
-                writeLogs("Response code from GET request is ---> "+ queryResponse.getStatusLine().getStatusCode(),logFileName);
+                writeLogs("Response code from 1st GET request is ---> "+ queryResponse.getStatusLine().getStatusCode(),logFileName);
                 JSONObject object = new JSONObject(EntityUtils.toString(queryResponse.getEntity()));
                 String fileName = object.get("Name").toString();
                 int BodyLength = (int) object.get("BodyLength");
@@ -69,13 +66,13 @@ public class CreateZip {
                 getBody.setHeader("Authorization", "Bearer "+urlAndToken[1]);
                 HttpResponse queryResponse1 = client.execute(getBody);
 
-                writeLogs("Response code from GET request is ---> "+ queryResponse1.getStatusLine().getStatusCode(),logFileName);
+                writeLogs("Response code from 2nd GET request is ---> "+ queryResponse1.getStatusLine().getStatusCode(),logFileName);
                 File file = new File(zipFilePath+fileName);
 
                 copyInputStreamToFile(queryResponse1.getEntity().getContent(),file,BodyLength);
             }
             catch(Exception e){
-                writeLogs("inside catch block of getRootFolderID Method-->"+e,logFileName);
+                writeLogs("inside catch block of getZipFilePath Method-->"+e,logFileName);
             }
         }
         return zipFiles(zipFilePath,zipFileName);
@@ -123,9 +120,9 @@ public class CreateZip {
 
         String[] data = new String[2];
         String baseUrl = loginHost+"/services/oauth2/token";
-        // Send a post request to the OAuth URL.
+
         HttpPost oauthPost = new HttpPost(baseUrl);
-        // The request body must contain these 5 values.
+
         List<BasicNameValuePair> parametersBody = new ArrayList<>();
         parametersBody.add(new BasicNameValuePair("grant_type", "password"));
         parametersBody.add(new BasicNameValuePair("username", username));
@@ -133,7 +130,7 @@ public class CreateZip {
         parametersBody.add(new BasicNameValuePair("client_id", consumerKey));
         parametersBody.add(new BasicNameValuePair("client_secret", consumerSecret));
         oauthPost.setEntity(new UrlEncodedFormEntity(parametersBody, HTTP.UTF_8));
-        // Execute the request.
+
         HttpResponse response = client.execute(oauthPost);
         String res = EntityUtils.toString(response.getEntity());
 
@@ -145,7 +142,6 @@ public class CreateZip {
     }
 
     public static void writeLogs(String line, String logFileName){
-
         try(FileWriter fw = new FileWriter("C:\\DownloadZip\\DownloadZipLogs\\"+logFileName+".txt", true);
             BufferedWriter bw = new BufferedWriter(fw);
             PrintWriter out = new PrintWriter(bw))

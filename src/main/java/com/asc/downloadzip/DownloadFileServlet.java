@@ -44,6 +44,6 @@ public class DownloadFileServlet extends HttpServlet {
         }
         inStream.close();
         outStream.close();
-        FileUtils.deleteDirectory(new File(filePath.split( downloadFile.getName())[0]));
+        FileUtils.forceDelete(new File(filePath.split( downloadFile.getName())[0]));
     }
 }
