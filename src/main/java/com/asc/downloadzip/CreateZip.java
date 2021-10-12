@@ -16,6 +16,8 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
+
+import java.util.Date;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -28,7 +30,7 @@ public class CreateZip {
   protected static final String password = "yaya10Febyaya";
   protected static final String loginHost = "https://test.salesforce.com";
 
-    /*//Production credentials
+ /*   //Production credentials
 
     protected static final String username="bakul@aspiresoftwareconsultancy.com1";
     protected static final String password="xyz20febzyx";
@@ -37,14 +39,14 @@ public class CreateZip {
     protected static final String loginHost="https://login.salesforce.com";*/
 
     public String[] urlAndToken = new String[2];
-    public String logFileName,zipFilePath,DirName;
+    public String zipFilePath,DirName;
 
-    public String getZipFilePath(String[] ids, String zipFileName) throws IOException {
+    public String getZipFilePath(String[] ids, String zipFileName, String logFileName) throws IOException {
         DirName = String.valueOf(LocalDateTime.now()).replace(":","-");
         Path path = Paths.get("C:\\DownloadZip\\"+DirName);
         Files.createDirectories(path);
         zipFilePath ="C:\\DownloadZip\\"+DirName+"\\";
-        logFileName = zipFileName+"_log";
+
         for (String id: ids) {
 
             CloseableHttpClient client = HttpClients.createDefault();
@@ -142,13 +144,33 @@ public class CreateZip {
     }
 
     public static void writeLogs(String line, String logFileName){
-        try(FileWriter fw = new FileWriter("C:\\DownloadZip\\DownloadZipLogs\\"+logFileName+".txt", true);
+        try(FileWriter fw = new FileWriter("C:\\DownloadZipLogs\\"+logFileName+".txt", true);
             BufferedWriter bw = new BufferedWriter(fw);
             PrintWriter out = new PrintWriter(bw))
         {
             out.println(LocalDateTime.now() + "---- " + line);
         } catch (IOException e) {
             writeLogs("inside catch block of writeLogs Method-->"+e,logFileName);
+        }
+    }
+
+    public static void deleteOldFiles(){
+        long numDays = 1;
+        String dir = "C:\\DownloadZip\\";
+                File directory = new File(dir);
+        File[] fList = directory.listFiles();
+
+        if (fList != null){
+            for (File file : fList){
+                if (file.isFile()){
+                    long diff = new Date().getTime() - file.lastModified();
+                    long cutoff = (numDays * (24* 60 * 60 * 1000));
+
+                    if (diff > cutoff) {
+                        file.delete();
+                    }
+                }
+            }
         }
     }
 }

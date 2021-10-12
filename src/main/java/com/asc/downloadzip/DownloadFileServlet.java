@@ -13,37 +13,45 @@ import java.io.OutputStream;
 
 @WebServlet(name = "DownloadFileServlet", value = "/DownloadFile")
 public class DownloadFileServlet extends HttpServlet {
+
+    String zipFileName;
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        String zipFileName = request.getParameter("fileName");
-        String[] listOfId = request.getParameter("Id").split(",");
+        try {
+            zipFileName = request.getParameter("fileName");
+            String[] listOfId = request.getParameter("Id").split(",");
 
-        String filePath = new CreateZip().getZipFilePath(listOfId,zipFileName);
+            String filePath = new CreateZip().getZipFilePath(listOfId, zipFileName, zipFileName+"_log");
 
-        File downloadFile = new File(filePath);
-        FileInputStream inStream = new FileInputStream(downloadFile);
-        ServletContext context = getServletContext();
-        String mimeType = context.getMimeType(filePath);
-        if (mimeType == null) {
-            mimeType = "application/octet-stream";
+            File downloadFile = new File(filePath);
+            FileInputStream inStream = new FileInputStream(downloadFile);
+            ServletContext context = getServletContext();
+            String mimeType = context.getMimeType(filePath);
+            if (mimeType == null) {
+                mimeType = "application/octet-stream";
+            }
+            long fileLength = downloadFile.length();
+            response.setContentType(mimeType);
+            response.setContentLength((int) downloadFile.length());
+            String headerKey = "Content-Disposition";
+            String headerValue = String.format("attachment; filename=\"%s\"", downloadFile.getName());
+            response.setHeader(headerKey, headerValue);
+
+            OutputStream outStream = response.getOutputStream();
+            byte[] buffer = new byte[(int) fileLength];
+            int bytesRead;
+
+            while ((bytesRead = inStream.read(buffer)) != -1) {
+                outStream.write(buffer, 0, bytesRead);
+            }
+            inStream.close();
+            outStream.close();
+            FileUtils.forceDelete(new File(filePath.split(downloadFile.getName())[0]));
+            CreateZip.writeLogs("Dir is deleted.",zipFileName+"_log");
+            CreateZip.deleteOldFiles();
+        }catch(Exception e){
+            CreateZip.writeLogs("catch block of doPost method -->"+e,zipFileName+"_log");
         }
-        long fileLength = downloadFile.length();
-        response.setContentType(mimeType);
-        response.setContentLength((int) downloadFile.length());
-        String headerKey = "Content-Disposition";
-        String headerValue = String.format("attachment; filename=\"%s\"", downloadFile.getName());
-        response.setHeader(headerKey, headerValue);
-
-        OutputStream outStream = response.getOutputStream();
-        byte[] buffer = new byte[(int) fileLength];
-        int bytesRead;
-
-        while ((bytesRead = inStream.read(buffer)) != -1) {
-            outStream.write(buffer, 0, bytesRead);
-        }
-        inStream.close();
-        outStream.close();
-        FileUtils.forceDelete(new File(filePath.split( downloadFile.getName())[0]));
     }
 }
