@@ -23,28 +23,27 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class CreateZip {
-      //Sandbox credentials
+   /*   //Sandbox credentials
   protected static final String consumerKey = "3MVG9M6Iz6p_Vt2xTZYciaJsvx2C0hV6f3u3y6UB.fNzEVy.sc2ZDMj12b7wihlmHAtmVv7a7naMWo1cjqTy5";
   protected static final String consumerSecret = "F1869E3FA25ED1D3B3C8A0666DA0EAA7A525CDC27D549205F971A8971AA15F97";
   protected static final String username = "bakul@aspiresoftwareconsultancy.com1.loanfigure";
   protected static final String password = "yaya10Febyaya";
-  protected static final String loginHost = "https://test.salesforce.com";
+  protected static final String loginHost = "https://test.salesforce.com";*/
 
- /*   //Production credentials
+    //Production credentials
 
     protected static final String username="bakul@aspiresoftwareconsultancy.com1";
     protected static final String password="xyz20febzyx";
     protected static final String consumerKey ="3MVG9sG9Z3Q1Rlbfx4FPNiE8CTkriBrbnqoxyHL1UspMzWdThbpRgWYyWwFtjK0tAcHdUBp1O2XO2zsG.xTVm";
     protected static final String consumerSecret ="7680ECE9BA31DFA78A7080B26EBAB5AF20D323315680758538DA56D4B0807418";
-    protected static final String loginHost="https://login.salesforce.com";*/
+    protected static final String loginHost="https://login.salesforce.com";
 
     public String[] urlAndToken = new String[2];
     public String zipFilePath,DirName;
 
     public String getZipFilePath(String[] ids, String zipFileName, String logFileName) throws IOException {
         DirName = String.valueOf(LocalDateTime.now()).replace(":","-");
-        Path path = Paths.get("C:\\DownloadZip\\"+DirName);
-        Files.createDirectories(path);
+        Files.createDirectories(Paths.get("C:\\DownloadZip\\"+DirName));
         zipFilePath ="C:\\DownloadZip\\"+DirName+"\\";
 
         for (String id: ids) {
@@ -162,9 +161,9 @@ public class CreateZip {
 
         if (fList != null){
             for (File file : fList){
-                if (file.isFile()){
+                if (file.isDirectory()){
                     long diff = new Date().getTime() - file.lastModified();
-                    long cutoff = (numDays * (24* 60 * 60 * 1000));
+                    long cutoff = (numDays * (24 * 60 * 60 * 1000));
 
                     if (diff > cutoff) {
                         file.delete();

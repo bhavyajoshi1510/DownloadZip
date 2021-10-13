@@ -10,19 +10,21 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.time.LocalDateTime;
 
 @WebServlet(name = "DownloadFileServlet", value = "/DownloadFile")
 public class DownloadFileServlet extends HttpServlet {
 
-    String zipFileName;
+    String zipFileName, logFileName;
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         try {
             zipFileName = request.getParameter("fileName");
             String[] listOfId = request.getParameter("Id").split(",");
+            logFileName = String.valueOf(LocalDateTime.now()).replace(":","-")+"__"+zipFileName+"_log";
 
-            String filePath = new CreateZip().getZipFilePath(listOfId, zipFileName, zipFileName+"_log");
+            String filePath = new CreateZip().getZipFilePath(listOfId, zipFileName, logFileName);
 
             File downloadFile = new File(filePath);
             FileInputStream inStream = new FileInputStream(downloadFile);
@@ -32,6 +34,8 @@ public class DownloadFileServlet extends HttpServlet {
                 mimeType = "application/octet-stream";
             }
             long fileLength = downloadFile.length();
+            CreateZip.writeLogs("***********-------------Length of the zip file---------------***************"+fileLength,logFileName);
+            CreateZip.writeLogs("***********-------------Length of the zip file in Integer ---------------***************"+(int)fileLength,logFileName);
             response.setContentType(mimeType);
             response.setContentLength((int) downloadFile.length());
             String headerKey = "Content-Disposition";
@@ -48,10 +52,10 @@ public class DownloadFileServlet extends HttpServlet {
             inStream.close();
             outStream.close();
             FileUtils.forceDelete(new File(filePath.split(downloadFile.getName())[0]));
-            CreateZip.writeLogs("Dir is deleted.",zipFileName+"_log");
+            CreateZip.writeLogs("***********-------------Dir is deleted.---------------***************",logFileName);
             CreateZip.deleteOldFiles();
         }catch(Exception e){
-            CreateZip.writeLogs("catch block of doPost method -->"+e,zipFileName+"_log");
+            CreateZip.writeLogs("catch block of doPost method -->"+e,logFileName);
         }
     }
 }
