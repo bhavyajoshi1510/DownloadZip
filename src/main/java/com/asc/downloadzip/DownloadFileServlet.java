@@ -25,7 +25,7 @@ public class DownloadFileServlet extends HttpServlet {
             logFileName = String.valueOf(LocalDateTime.now()).replace(":","-")+"__"+zipFileName+"_log";
 
             String filePath = new CreateZip().getZipFilePath(listOfId, zipFileName, logFileName);
-
+            CreateZip.writeLogs("***********-------------Zip is created.---------------***************",logFileName);
             File downloadFile = new File(filePath);
             FileInputStream inStream = new FileInputStream(downloadFile);
             ServletContext context = getServletContext();

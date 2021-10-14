@@ -71,16 +71,19 @@ public class CreateZip {
                 File file = new File(zipFilePath+fileName);
 
                 copyInputStreamToFile(queryResponse1.getEntity().getContent(),file,BodyLength);
+                writeLogs("file is created ---------> ",logFileName);
             }
             catch(Exception e){
                 writeLogs("inside catch block of getZipFilePath Method-->"+e,logFileName);
             }
         }
-        return zipFiles(zipFilePath,zipFileName);
+        return zipFiles(zipFilePath,zipFileName,logFileName);
     }
 
-    private  String zipFiles(String zipFilePath,String zipFileName) {
+    private  String zipFiles(String zipFilePath,String zipFileName, String logFileName) {
         try {
+
+            writeLogs("Creation of Zip started --------------->",logFileName);
             File[] files = new File(zipFilePath).listFiles();
             String[] filePaths = new String[files.length];
             for (int i = 0; i < files.length; i++) {
@@ -92,17 +95,16 @@ public class CreateZip {
 
             for (String aFile : filePaths) {
                 zos.putNextEntry(new ZipEntry(new File(aFile).getName()));
-
                 byte[] bytes = Files.readAllBytes(Paths.get(aFile));
                 zos.write(bytes, 0, bytes.length);
                 zos.closeEntry();
             }
             zos.close();
-
+            writeLogs("Creation of Zip completed --------------->",logFileName);
         } catch (FileNotFoundException ex) {
-            System.err.println("A file does not exist: " + ex);
+            writeLogs("A file does not exist: inside zipFiles Method -------+++++++++ " + ex,logFileName);
         } catch (IOException ex) {
-            System.err.println("I/O error: " + ex);
+            writeLogs("I/O error: inside zipFiles method -----------+++++ " + ex,logFileName);
         }
         return zipFilePath+zipFileName+".zip";
     }
