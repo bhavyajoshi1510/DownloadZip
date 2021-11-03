@@ -6,6 +6,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
@@ -23,7 +25,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class CreateZip {
-   /*   //Sandbox credentials
+  /*    //Sandbox credentials
   protected static final String consumerKey = "3MVG9M6Iz6p_Vt2xTZYciaJsvx2C0hV6f3u3y6UB.fNzEVy.sc2ZDMj12b7wihlmHAtmVv7a7naMWo1cjqTy5";
   protected static final String consumerSecret = "F1869E3FA25ED1D3B3C8A0666DA0EAA7A525CDC27D549205F971A8971AA15F97";
   protected static final String username = "bakul@aspiresoftwareconsultancy.com1.loanfigure";
@@ -31,7 +33,6 @@ public class CreateZip {
   protected static final String loginHost = "https://test.salesforce.com";*/
 
     //Production credentials
-
     protected static final String username="bakul@aspiresoftwareconsultancy.com1";
     protected static final String password="xyz20febzyx";
     protected static final String consumerKey ="3MVG9sG9Z3Q1Rlbfx4FPNiE8CTkriBrbnqoxyHL1UspMzWdThbpRgWYyWwFtjK0tAcHdUBp1O2XO2zsG.xTVm";
@@ -54,24 +55,24 @@ public class CreateZip {
                 HttpGet get = new HttpGet(urlAndToken[0]+"/services/data/v53.0/sobjects/Attachment/"+id);
                 get.setHeader("Authorization", "OAuth " + urlAndToken[1]);
                 HttpResponse queryResponse = client.execute(get);
-                writeLogs("Response code from 1st GET request is ---> "+ queryResponse.getStatusLine().getStatusCode(),logFileName);
+                //writeLogs("Response code from 1st GET request is ---> "+ queryResponse.getStatusLine().getStatusCode(),logFileName);
                 JSONObject object = new JSONObject(EntityUtils.toString(queryResponse.getEntity()));
                 String fileName = object.get("Name").toString();
                 int BodyLength = (int) object.get("BodyLength");
 
-                writeLogs("File Name is -------> "+ fileName,logFileName);
+             /*   writeLogs("File Name is -------> "+ fileName,logFileName);
                 writeLogs("Length of the file original ---> "+ object.get("BodyLength").toString(),logFileName);
-                writeLogs("Length of the file Int ---> "+ BodyLength,logFileName);
+                writeLogs("Length of the file Int ---> "+ BodyLength,logFileName);*/
 
                 HttpGet getBody = new HttpGet(urlAndToken[0]+"/services/data/v53.0/sobjects/Attachment/"+id+"/Body");
                 getBody.setHeader("Authorization", "Bearer "+urlAndToken[1]);
                 HttpResponse queryResponse1 = client.execute(getBody);
 
-                writeLogs("Response code from 2nd GET request is ---> "+ queryResponse1.getStatusLine().getStatusCode(),logFileName);
+                //writeLogs("Response code from 2nd GET request is ---> "+ queryResponse1.getStatusLine().getStatusCode(),logFileName);
                 File file = new File(zipFilePath+fileName);
 
                 copyInputStreamToFile(queryResponse1.getEntity().getContent(),file,BodyLength);
-                writeLogs("file is created ---------> ",logFileName);
+                //writeLogs("file is created ---------> ",logFileName);
             }
             catch(Exception e){
                 writeLogs("inside catch block of getZipFilePath Method-->"+e,logFileName);
@@ -95,6 +96,7 @@ public class CreateZip {
 
             for (String aFile : filePaths) {
                 zos.putNextEntry(new ZipEntry(new File(aFile).getName()));
+                //IOUtils.copy(fileStream.getInputStream(), zos);
                 byte[] bytes = Files.readAllBytes(Paths.get(aFile));
                 zos.write(bytes, 0, bytes.length);
                 zos.closeEntry();
