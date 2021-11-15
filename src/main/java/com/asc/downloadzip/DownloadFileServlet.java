@@ -11,8 +11,7 @@ public class DownloadFileServlet extends HttpServlet {
     public String zipFileName, logFileName, filePath, DirName, threadName;
     public Thread thread;
 
-   @Override
-
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         try {
@@ -32,6 +31,7 @@ public class DownloadFileServlet extends HttpServlet {
                 });
                 thread.setName(DirName);
                 thread.start();
+                CreateZip.writeLogs("***********------------- threadName---------------***************"+thread.getName(),logFileName);
                 response.addHeader("Access-Control-Allow-Origin", "*");
                 response.addHeader("Access-Control-Allow-Methods","GET, OPTIONS, HEAD, PUT, POST");
                 PrintWriter out = response.getWriter();
@@ -49,16 +49,26 @@ public class DownloadFileServlet extends HttpServlet {
                 logFileName = request.getParameter("logFileName");
                 zipFileName = request.getParameter("zipFileName");
                 CreateZip.writeLogs("***********-------------Followup Request came---------------***************",logFileName);
-                CreateZip.writeLogs("***********-------------Followup thread name--------------***************"+threadName,logFileName);
-                CreateZip.writeLogs("***********-------------Followup logFileName name--------------***************"+logFileName,logFileName);
-                CreateZip.writeLogs("***********-------------Followup zipFileName name--------------***************"+zipFileName,logFileName);
                 filePath = "C:\\DownloadZip\\"+threadName+"\\"+zipFileName+".zip";
-                checkStatus obj = new checkStatus();
-                thread = obj.getThreadByName(threadName);
-                if(thread.getState() == Thread.State.TERMINATED){
-                    CreateZip.writeLogs("***********-------------Thread is terminated------ Download initiated--------***************",logFileName);
-                    obj.initiateDownload(response,filePath,logFileName);
+                thread = new checkStatus().getThreadByName(threadName);
+
+                if(thread==null){
+                    //CreateZip.writeLogs("***********-------------Thread is terminated------ Download initiated--------***************",logFileName);
+                    response.addHeader("Access-Control-Allow-Origin", "*");
+                    response.addHeader("Access-Control-Allow-Methods","GET, OPTIONS, HEAD, PUT, POST");
+                    PrintWriter out = response.getWriter();
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("UTF-8");
+                    out.print("{\n" +
+                            "  \"logFileName\": \""+logFileName+"\",\n" +
+                            "  \"zipFileName\": \""+zipFileName+"\",\n" +
+                            "  \"zipFilePath\": \""+threadName+"\",\n" +
+                            "  \"zipCreatedStatus\": \"Completed\"\n" +
+                            "}");
+                    out.flush();
                 }else{
+                    response.addHeader("Access-Control-Allow-Origin", "*");
+                    response.addHeader("Access-Control-Allow-Methods","GET, OPTIONS, HEAD, PUT, POST");
                     PrintWriter out = response.getWriter();
                     response.setContentType("application/json");
                     response.setCharacterEncoding("UTF-8");

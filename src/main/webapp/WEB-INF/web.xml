@@ -14,15 +14,15 @@
         <url-pattern>/DownloadFile</url-pattern>
     </servlet-mapping>
 
-   <!-- <servlet>
-        <servlet-name>checkStatus</servlet-name>
-        <servlet-class>com.asc.downloadzip.checkStatus</servlet-class>
+   <servlet>
+        <servlet-name>DownloadZipServlet</servlet-name>
+        <servlet-class>com.asc.downloadzip.DownloadZipServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
-        <servlet-name>checkStatus</servlet-name>
-        <url-pattern>/status</url-pattern>
-    </servlet-mapping>-->
+        <servlet-name>DownloadZipServlet</servlet-name>
+        <url-pattern>/DownloadZip</url-pattern>
+    </servlet-mapping>
 
   <!--  <session-config>
         <session-timeout>60</session-timeout>
